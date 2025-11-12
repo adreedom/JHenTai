@@ -2,9 +2,8 @@ name: Sync Fork with Upstream
 
 on:
   schedule:
-    # 每天午夜运行一次（UTC 时间）
-    - cron: '0 0 * * *'
-  workflow_dispatch:  # 允许手动触发
+    - cron: '0 0 * * *'       # 每天 0 点（UTC）自动同步
+  workflow_dispatch:           # 支持手动触发
 
 jobs:
   sync:
@@ -14,8 +13,7 @@ jobs:
     - name: Checkout the forked repo
       uses: actions/checkout@v4
       with:
-        persist-credentials: false  # 防止自动使用 GITHUB_TOKEN 推送时权限问题
-        fetch-depth: 0              # 获取完整的历史，以便可以合并
+        fetch-depth: 0
 
     - name: Configure Git identity
       run: |
@@ -23,7 +21,9 @@ jobs:
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
     - name: Add upstream remote
-      run: git remote add upstream https://github.com/jiangtian616/JHenTai.git
+      env:
+        UPSTREAM_URL: https://github.com/adreedom/JHenTai.git  # 换成原仓库地址
+      run: git remote add upstream "$UPSTREAM_URL"
 
     - name: Fetch upstream changes
       run: git fetch upstream
